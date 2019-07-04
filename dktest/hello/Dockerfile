@@ -1,0 +1,1 @@
+docker run -it --rm -v /Users/bitmain/gowork:/go -v /Users/bitmain/gowork/src/go-every-day:/go/src/go-every-day --privileged golang bash

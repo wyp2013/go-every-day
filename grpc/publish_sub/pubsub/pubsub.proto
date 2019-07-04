@@ -1,0 +1,35 @@
+/*
+ test publish subscribe service
+*/
+
+syntax = "proto3";
+
+package pubsub;
+
+service  PubsubService {
+    rpc Publish(PubRequest) returns (PubReply) {
+    }
+
+    rpc SubscribeTopic(SubRequest) returns(stream SubReply) {
+    }
+}
+
+message PubRequest {
+    string topic     = 1;
+    int32  topicType = 2;
+}
+
+message PubReply {
+    string content = 1;
+    int32  errno   = 2;
+}
+
+message SubRequest {
+    string topic     = 1;
+    int32  topicType = 2;
+}
+
+message SubReply {
+    string content = 1;
+    int32  errno   = 2;
+}

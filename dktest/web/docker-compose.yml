@@ -1,0 +1,19 @@
+version: '3'
+services:
+  service:
+    container_name: test_web.dev
+    build:
+      context: .
+    expose:
+      - 30000/tcp
+    networks:
+      - docker_test_default
+      - local
+    volumes:
+      - .:/go/src/web
+networks:
+  docker_test_default:
+    external:
+      name: docker_test_default
+  local:
+    internal: true
