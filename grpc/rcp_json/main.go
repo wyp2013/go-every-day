@@ -61,6 +61,7 @@ func GrpcHandlerFunc(grpcServer *grpc.Server, otherHandler http.Handler) http.Ha
 }
 
 func NewGatewayServer(permFile, certName string, endpoint string) http.Handler {
+	// 这里其实和client的代码一样，内部rpc也要学tls认证
 	dcreds, err := credentials.NewClientTLSFromFile(permFile, certName)
 	if err != nil {
 		panic(err.Error())
@@ -70,6 +71,12 @@ func NewGatewayServer(permFile, certName string, endpoint string) http.Handler {
 
 	dopts := []grpc.DialOption{grpc.WithTransportCredentials(dcreds)}
 	gwmux := gw.NewServeMux()
+
+	/*
+	RegisterGreeterHandlerFromEndpoint干的事情：
+	1. 根据endpoint和认证参数，创建一个rpc client
+	2. 注册gateway的hanlder到gwmux中，比如/hello_word对应的rpc接口sayHello
+	 */
 	if err := pb.RegisterGreeterHandlerFromEndpoint(ctx, gwmux, endpoint, dopts); err != nil {
 		panic(err.Error())
 		return nil
@@ -102,7 +109,7 @@ func main() {
 	// grpc server
 	grpcServer := NewGrpcServer(permPathFile, keyPathFile)
 
-	// gateway server
+	// gateway server，其实就是把通过https的请求转换成rpcClient请求的一个处理handle
 	gwmux := NewGatewayServer(permPathFile, "localhost", endpoint)
 
 	mux := http.NewServeMux()
