@@ -61,7 +61,7 @@ func GrpcHandlerFunc(grpcServer *grpc.Server, otherHandler http.Handler) http.Ha
 }
 
 func NewGatewayServer(permFile, certName string, endpoint string) http.Handler {
-	// 这里其实和client的代码一样，内部rpc也要学tls认证
+	// 这里其实和client的代码一样，内部rpc也要tls认证
 	dcreds, err := credentials.NewClientTLSFromFile(permFile, certName)
 	if err != nil {
 		panic(err.Error())
