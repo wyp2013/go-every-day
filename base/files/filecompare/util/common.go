@@ -11,3 +11,7 @@ func ObjToStr(data interface{}) (string, error) {
 	return string(bytes), nil
 }
 
+func StrToObj(data string, v interface{}) error {
+	err := json.Unmarshal([]byte(data), v)
+	return err
+}

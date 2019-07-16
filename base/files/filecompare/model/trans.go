@@ -85,7 +85,11 @@ func (t *TransModel) ConstructFromFile(filePath string, separator string) (map[s
 		}
 	}
 
-	fmt.Println(util.ObjToStr(transMap))
+	str, _ := util.ObjToStr(transMap)
+	var obj map[string]*_struct.Transcation
+	util.StrToObj(str, &obj)
+	st1, _ := util.ObjToStr(obj)
+	fmt.Println(str, st1)
 
 	return transMap, keys, nil
 }
