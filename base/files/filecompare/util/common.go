@@ -10,3 +10,4 @@ func ObjToStr(data interface{}) (string, error) {
 
 	return string(bytes), nil
 }
+

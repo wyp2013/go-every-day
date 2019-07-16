@@ -46,4 +46,8 @@ func TestMapTravel(t *testing.T) {
 
 func TestMapDelete(t *testing.T) {
 	fmt.Println("xxxxxx")
+
+	tMap := make(map[string]interface{}, 0)
+	tMap["xxxx"] = 1.5
+	tMap["yyyy"] = 6
 }

@@ -16,11 +16,21 @@ func notModifySlice(s []int) {
 
 func TestNotMoidyfSlice(t *testing.T) {
 	fmt.Println("------------------------TestNotModifySlice-------------------------")
-	s := []int{1, 2, 3}
+	//s := []int{1, 2, 3}
+	//
+	//fmt.Println("before call notModifySlice ", len(s), cap(s))
+	//notModifySlice(s)
+	//fmt.Println("after call notModifySlice ", len(s), cap(s))
 
-	fmt.Println("before call notModifySlice ", len(s), cap(s))
-	notModifySlice(s)
-	fmt.Println("after call notModifySlice ", len(s), cap(s))
+	ss := make([]int, 0, 10)
+	ss = append(ss, 1)
+
+	fmt.Println("before call notModifySlice ", ss, len(ss), cap(ss))
+	notModifySlice(ss)
+
+	//adx := unsafe.Pointer(&ss[0])
+	//fmt.Println(int(adx)+ 1)
+	fmt.Println("after call notModifySlice ", ss, len(ss), cap(ss))
 }
 
 
