@@ -3,11 +3,12 @@ package main
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"flag"
 	"fmt"
+	_ "github.com/go-sql-driver/mysql"
 	"github.com/go-xorm/core"
 	"github.com/go-xorm/xorm"
-	_ "github.com/go-sql-driver/mysql"
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
 	"go-every-day/dktest/web/common"
@@ -16,9 +17,9 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
+	"path"
 	"runtime"
 	"time"
-	"errors"
 )
 
 func InitDb(dsn, dblog string) (engine *xorm.Engine, err error) {
@@ -29,7 +30,7 @@ func InitDb(dsn, dblog string) (engine *xorm.Engine, err error) {
 	}
 
 	engine.ShowSQL(true)
-	engine.Logger().SetLevel(core.LOG_INFO)
+	engine.Logger().SetLevel(core.LogLevel(core.LOG_INFO))
 
 	f := utils.NewXormLogger(dblog)
 	if f == nil {
@@ -246,6 +247,16 @@ func Flagset() *flag.FlagSet {
 	return flagSet
 }
 
+func getLogPath() string {
+	_, filename, _, ok1 := runtime.Caller(0)
+	if !ok1 {
+		panic("No caller information")
+	}
+	dir := path.Dir(filename)
+
+	logPath := dir + "/log"
+	return logPath
+}
 
 func main() {
 	runtime.GOMAXPROCS(runtime.NumCPU())
@@ -255,7 +266,7 @@ func main() {
 	e := echo.New()
 
 	//Db初始化
-	engine, err := InitDb("root:123456@tcp(127.0.0.1:3306)/pushtx?charset=utf8", "./log/xorm_log")
+	engine, err := InitDb("root:123456@tcp(127.0.0.1:3306)/pushtx?charset=utf8", getLogPath() + "/xorm_log")
 	if err != nil {
 		panic("init db fail:" + err.Error())
 	}
@@ -270,11 +281,11 @@ func main() {
 	e.Use(func(h echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
 			cc := &common.CustomContext{
-				Context:    c,
-				DbEngine:   engine,
-				ActionId:   c.QueryParam("actionId"),
-				RequestId:  c.Response().Header().Get(echo.HeaderXRequestID),
-				StartTime:  time.Now(),
+				Context:   c,
+				DbEngine:  engine,
+				ActionId:  c.QueryParam("actionId"),
+				RequestId: c.Response().Header().Get(echo.HeaderXRequestID),
+				StartTime: time.Now(),
 			}
 			return h(cc)
 		}

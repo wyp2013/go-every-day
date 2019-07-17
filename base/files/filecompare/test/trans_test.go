@@ -35,6 +35,10 @@ func getFindKeys(filePath string) map[string]int {
 	return keyMap
 }
 
+func getOutputPath() {
+
+}
+
 func TestTransConstructFromFile(t *testing.T) {
 	transModel := model.TransModel{}
 
