@@ -44,10 +44,36 @@ func TestMapTravel(t *testing.T) {
 	fmt.Println("xxxxx")
 }
 
+
+func printMap(m map[string]interface{}) {
+	for key, val := range m {
+		fmt.Println(key, val)
+	}
+
+	fmt.Println("xxxxxxxxxxxxxxxxxxxxx")
+}
+
+func TestMapValueInterface(t *testing.T) {
+	tMap := make(map[string]interface{}, 0)
+	tMap["xxxx"] = 1.5
+	tMap["yyyy"] = 6
+
+	tMap["struct"] = struct {
+		X int
+		Y string
+	}{X: 1, Y: "test"}
+	tMap["ysdf"] = 7
+	tMap["zzzzz"] = 8
+
+	printMap(tMap)
+	printMap(tMap)
+}
+
 func TestMapDelete(t *testing.T) {
 	fmt.Println("xxxxxx")
 
 	tMap := make(map[string]interface{}, 0)
 	tMap["xxxx"] = 1.5
 	tMap["yyyy"] = 6
+	delete(tMap, "xxxx")
 }

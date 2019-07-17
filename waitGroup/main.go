@@ -1,7 +1,6 @@
 package main
 
 import (
-	"context"
 	"fmt"
 	"sync"
 	"time"
@@ -45,7 +44,9 @@ func WaitTimeout(wg *sync.WaitGroup, timeout time.Duration) bool {
 		return true
 	}
 
-	context.WithTimeout(context.TODO(), time.Second *10)
+	// ctx, cancle := context.WithTimeout(context.TODO(), time.Second *10)
+	// defer cancle()
+	// ctx.Done()
 
 	return false
 }
