@@ -36,6 +36,7 @@ var _ server.Option
 type GreeterService interface {
 	// Sends a greeting
 	SayHello(ctx context.Context, in *HelloRequest, opts ...client.CallOption) (*HelloReply, error)
+	SayHello2(ctx context.Context, opts ...client.CallOption) (Greeter_SayHello2Service, error)
 }
 
 type greeterService struct {
@@ -66,16 +67,54 @@ func (c *greeterService) SayHello(ctx context.Context, in *HelloRequest, opts ..
 	return out, nil
 }
 
+func (c *greeterService) SayHello2(ctx context.Context, opts ...client.CallOption) (Greeter_SayHello2Service, error) {
+	req := c.c.NewRequest(c.name, "Greeter.SayHello2", &HelloRequest{})
+	stream, err := c.c.Stream(ctx, req, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &greeterServiceSayHello2{stream}, nil
+}
+
+type Greeter_SayHello2Service interface {
+	SendMsg(interface{}) error
+	RecvMsg(interface{}) error
+	Close() error
+	Send(*HelloRequest) error
+}
+
+type greeterServiceSayHello2 struct {
+	stream client.Stream
+}
+
+func (x *greeterServiceSayHello2) Close() error {
+	return x.stream.Close()
+}
+
+func (x *greeterServiceSayHello2) SendMsg(m interface{}) error {
+	return x.stream.Send(m)
+}
+
+func (x *greeterServiceSayHello2) RecvMsg(m interface{}) error {
+	return x.stream.Recv(m)
+}
+
+func (x *greeterServiceSayHello2) Send(m *HelloRequest) error {
+	return x.stream.Send(m)
+}
+
 // Server API for Greeter service
 
 type GreeterHandler interface {
 	// Sends a greeting
 	SayHello(context.Context, *HelloRequest, *HelloReply) error
+	SayHello2(context.Context, Greeter_SayHello2Stream) error
 }
 
 func RegisterGreeterHandler(s server.Server, hdlr GreeterHandler, opts ...server.HandlerOption) error {
 	type greeter interface {
 		SayHello(ctx context.Context, in *HelloRequest, out *HelloReply) error
+		SayHello2(ctx context.Context, stream server.Stream) error
 	}
 	type Greeter struct {
 		greeter
@@ -90,4 +129,39 @@ type greeterHandler struct {
 
 func (h *greeterHandler) SayHello(ctx context.Context, in *HelloRequest, out *HelloReply) error {
 	return h.GreeterHandler.SayHello(ctx, in, out)
+}
+
+func (h *greeterHandler) SayHello2(ctx context.Context, stream server.Stream) error {
+	return h.GreeterHandler.SayHello2(ctx, &greeterSayHello2Stream{stream})
+}
+
+type Greeter_SayHello2Stream interface {
+	SendMsg(interface{}) error
+	RecvMsg(interface{}) error
+	Close() error
+	Recv() (*HelloRequest, error)
+}
+
+type greeterSayHello2Stream struct {
+	stream server.Stream
+}
+
+func (x *greeterSayHello2Stream) Close() error {
+	return x.stream.Close()
+}
+
+func (x *greeterSayHello2Stream) SendMsg(m interface{}) error {
+	return x.stream.Send(m)
+}
+
+func (x *greeterSayHello2Stream) RecvMsg(m interface{}) error {
+	return x.stream.Recv(m)
+}
+
+func (x *greeterSayHello2Stream) Recv() (*HelloRequest, error) {
+	m := new(HelloRequest)
+	if err := x.stream.Recv(m); err != nil {
+		return nil, err
+	}
+	return m, nil
 }

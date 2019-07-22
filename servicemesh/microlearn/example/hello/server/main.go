@@ -8,6 +8,7 @@ import (
 	"github.com/micro/go-micro/registry"
 	"github.com/micro/go-plugins/registry/etcdv3"
 	pb "go-every-day/servicemesh/microlearn/example/hello/proto"
+	"io"
 	"math/rand"
 )
 
@@ -31,11 +32,38 @@ func (s *Greeter) SayHello(ctx context.Context, in *pb.HelloRequest, reply *pb.H
 	return nil
 }
 
+func (s *Greeter) SayHello2(ctx context.Context, stream pb.Greeter_SayHello2Stream) error {
+	count := 0
+
+	for {
+		req, err := stream.Recv()
+		count++
+
+		if err == io.EOF {
+			fmt.Println("strem is close...")
+			return stream.Close()
+		}
+
+		if err != nil {
+			return err
+		}
+
+		// do something
+		fmt.Println(req)
+	}
+
+
+
+	return nil
+}
+
 
 func main() {
 	reg := etcdv3.NewRegistry(func(op *registry.Options){
 		op.Addrs = []string{
-			"http://127.0.0.1:2379", "http://127.0.0.1:12379", "http://127.0.0.1:22379",
+			"http://127.0.0.1:2379",
+			//"http://127.0.0.1:12379",
+			//"http://127.0.0.1:22379",
 		}
 	})
 
@@ -43,6 +71,7 @@ func main() {
 		micro.Name("HelloGreeter"),
 		micro.Version("latest"),
 		micro.Registry(reg),
+		// micro.Server(grpc.NewServer()), // 这里不用默认的rpcserver，改用grpcserver，注释也可以运行
 	)
 
 	service.Init()

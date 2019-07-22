@@ -19,9 +19,12 @@ func main() {
 	service := micro.NewService(
 		micro.Name("HelloGreeter1"),
 		micro.Registry(reg),
+		// micro.Server(grpc.NewServer()),  // 这里不用默认的rpcserver，改用grpcserver，注释也可以运行
 	)
 
 	service.Init()
+
+	ctx := context.Background()
 
 	// 服务提供方的名字
 	helloClient := pb.NewGreeterService("HelloGreeter", service.Client())
@@ -31,7 +34,7 @@ func main() {
 		age := int32(i + 10)
 		req := &pb.HelloRequest{Name: name, Age: age}
 
-		reply, err := helloClient.SayHello(context.Background(), req)
+		reply, err := helloClient.SayHello(ctx, req)
 		if err != nil {
 			fmt.Println(err.Error())
 			continue
@@ -39,4 +42,22 @@ func main() {
 
 		fmt.Println("response: ", reply)
 	}
+
+	stremClient, err := helloClient.SayHello2(ctx)
+	defer stremClient.Close()
+	if err != nil {
+		fmt.Println(err.Error())
+		return
+	}
+
+	for i := 0; i < 5; i++ {
+		name := fmt.Sprintf("sayhllo2-%d", i)
+		age := int32(i + 10)
+		req := &pb.HelloRequest{Name: name, Age: age}
+		err := stremClient.Send(req)
+		if err != nil {
+			fmt.Println(err.Error())
+		}
+	}
+
 }
