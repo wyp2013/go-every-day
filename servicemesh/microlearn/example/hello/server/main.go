@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/micro/go-micro"
 	"github.com/micro/go-micro/registry"
+	"github.com/micro/go-micro/server/grpc"
 	"github.com/micro/go-plugins/registry/etcdv3"
 	pb "go-every-day/servicemesh/microlearn/example/hello/proto"
 	"io"
@@ -68,10 +69,10 @@ func main() {
 	})
 
 	service := micro.NewService(
+		micro.Server(grpc.NewServer()), // 这里不用默认的rpcserver，改用grpcserver，注释也可以运行
 		micro.Name("HelloGreeter"),
 		micro.Version("latest"),
 		micro.Registry(reg),
-		// micro.Server(grpc.NewServer()), // 这里不用默认的rpcserver，改用grpcserver，注释也可以运行
 	)
 
 	service.Init()

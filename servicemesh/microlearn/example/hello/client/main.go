@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 	"github.com/micro/go-micro"
+	sgrpc "github.com/micro/go-micro/server/grpc"
+	cgrpc "github.com/micro/go-micro/client/grpc"
 	"github.com/micro/go-micro/registry"
 	"github.com/micro/go-plugins/registry/etcdv3"
 	pb "go-every-day/servicemesh/microlearn/example/hello/proto"
@@ -12,14 +14,16 @@ import (
 func main() {
 	reg := etcdv3.NewRegistry(func(op *registry.Options) {
 		op.Addrs = []string{
-			"http://127.0.0.1:2379", "http://127.0.0.1:12379", "http://127.0.0.1:22379",
+			"http://127.0.0.1:2379",
+			// "http://127.0.0.1:12379", "http://127.0.0.1:22379",
 		}
 	})
 
 	service := micro.NewService(
-		micro.Name("HelloGreeter1"),
+		micro.Server(sgrpc.NewServer()),  // 这里不用默认的rpcserver，改用grpcserver，注释也可以运行
+		micro.Client(cgrpc.NewClient()),  // 对应的client应该也是 grpc
+		micro.Name("HelloGreeter"),
 		micro.Registry(reg),
-		// micro.Server(grpc.NewServer()),  // 这里不用默认的rpcserver，改用grpcserver，注释也可以运行
 	)
 
 	service.Init()

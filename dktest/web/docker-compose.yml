@@ -11,6 +11,7 @@ services:
       - local
     volumes:
       - .:/go/src/web
+
 networks:
   docker_test_default:
     external:
