@@ -5,12 +5,14 @@ import (
 	"errors"
 	"fmt"
 	"github.com/micro/go-micro"
+	"github.com/micro/go-micro/broker"
 	"github.com/micro/go-micro/registry"
 	"github.com/micro/go-micro/server/grpc"
 	"github.com/micro/go-plugins/registry/etcdv3"
 	pb "go-every-day/servicemesh/microlearn/example/hello/proto"
 	"io"
 	"math/rand"
+	"sync"
 )
 
 type Greeter struct {
@@ -53,8 +55,6 @@ func (s *Greeter) SayHello2(ctx context.Context, stream pb.Greeter_SayHello2Stre
 		fmt.Println(req)
 	}
 
-
-
 	return nil
 }
 
@@ -78,7 +78,39 @@ func main() {
 	service.Init()
 	pb.RegisterGreeterHandler(service.Server(), new(Greeter))
 
-	if err := service.Run(); err != nil {
-		panic(err)
+	wait := &sync.WaitGroup{}
+	go func() {
+		wait.Add(1)
+		if err := service.Run(); err != nil {
+			panic(err)
+		}
+
+		wait.Done()
+	}()
+
+
+	service.Options().Broker.Connect()
+
+	// 测试broker, Broker.Subscribe必须运行在 Broker.Connect()之后
+	sub0, err0 := service.Options().Broker.Subscribe("testTopic", func(p broker.Event) error {
+		fmt.Println("sub0 receive: ", string(p.Message().Body))
+		return nil
+	})
+	if err0 != nil {
+		fmt.Println("sub0 error: ", err0.Error())
 	}
+
+	// 测试broker
+	sbu1, err1 := service.Options().Broker.Subscribe("testTopic", func(p broker.Event) error {
+		fmt.Println("sub1 receive: ", string(p.Message().Body))
+		return nil
+	})
+	if err1 != nil {
+		fmt.Println("sub1 error: ", err1.Error())
+	}
+
+	wait.Wait()
+
+	sub0.Unsubscribe()
+	sbu1.Unsubscribe()
 }

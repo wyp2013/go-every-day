@@ -4,9 +4,10 @@ import (
 	"context"
 	"fmt"
 	"github.com/micro/go-micro"
-	sgrpc "github.com/micro/go-micro/server/grpc"
+	"github.com/micro/go-micro/broker"
 	cgrpc "github.com/micro/go-micro/client/grpc"
 	"github.com/micro/go-micro/registry"
+	sgrpc "github.com/micro/go-micro/server/grpc"
 	"github.com/micro/go-plugins/registry/etcdv3"
 	pb "go-every-day/servicemesh/microlearn/example/hello/proto"
 )
@@ -22,7 +23,7 @@ func main() {
 	service := micro.NewService(
 		micro.Server(sgrpc.NewServer()),  // 这里不用默认的rpcserver，改用grpcserver，注释也可以运行
 		micro.Client(cgrpc.NewClient()),  // 对应的client应该也是 grpc
-		micro.Name("HelloGreeter"),
+		micro.Name("HelloGreeter1"),
 		micro.Registry(reg),
 	)
 
@@ -48,11 +49,11 @@ func main() {
 	}
 
 	stremClient, err := helloClient.SayHello2(ctx)
-	defer stremClient.Close()
 	if err != nil {
 		fmt.Println(err.Error())
 		return
 	}
+	defer stremClient.Close()
 
 	for i := 0; i < 5; i++ {
 		name := fmt.Sprintf("sayhllo2-%d", i)
@@ -64,4 +65,21 @@ func main() {
 		}
 	}
 
+	msg := &broker.Message{
+		Header: map[string]string{
+			"Content-Type": "application/json",
+		},
+		Body: []byte(`{"message": "Hello World"}`),
+	}
+
+	// broker的pulish是异步发送
+	err = service.Options().Broker.Publish("testTopic", msg)
+	if err != nil {
+		fmt.Println(err.Error())
+	}
+
+	// 阻塞push信息发送完成
+	select {
+
+	}
 }
