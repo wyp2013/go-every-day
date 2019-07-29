@@ -12,7 +12,6 @@ import (
 	pb "go-every-day/servicemesh/microlearn/example/hello/proto"
 	"io"
 	"math/rand"
-	"sync"
 )
 
 type Greeter struct {
@@ -78,21 +77,11 @@ func main() {
 	service.Init()
 	pb.RegisterGreeterHandler(service.Server(), new(Greeter))
 
-	wait := &sync.WaitGroup{}
-	go func() {
-		wait.Add(1)
-		if err := service.Run(); err != nil {
-			panic(err)
-		}
 
-		wait.Done()
-	}()
-
-
+    // 启动broker服务
 	service.Options().Broker.Connect()
-
 	// 测试broker, Broker.Subscribe必须运行在 Broker.Connect()之后
-	sub0, err0 := service.Options().Broker.Subscribe("testTopic", func(p broker.Event) error {
+	_, err0 := service.Options().Broker.Subscribe("testTopic", func(p broker.Event) error {
 		fmt.Println("sub0 receive: ", string(p.Message().Body))
 		return nil
 	})
@@ -100,17 +89,8 @@ func main() {
 		fmt.Println("sub0 error: ", err0.Error())
 	}
 
-	// 测试broker
-	sbu1, err1 := service.Options().Broker.Subscribe("testTopic", func(p broker.Event) error {
-		fmt.Println("sub1 receive: ", string(p.Message().Body))
-		return nil
-	})
-	if err1 != nil {
-		fmt.Println("sub1 error: ", err1.Error())
+	// 启动服务
+	if err := service.Run(); err != nil {
+		panic(err)
 	}
-
-	wait.Wait()
-
-	sub0.Unsubscribe()
-	sbu1.Unsubscribe()
 }

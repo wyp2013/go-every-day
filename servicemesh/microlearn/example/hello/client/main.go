@@ -72,7 +72,7 @@ func main() {
 		Body: []byte(`{"message": "Hello World"}`),
 	}
 
-	// broker的pulish是异步发送
+	// broker的publish是异步发送
 	err = service.Options().Broker.Publish("testTopic", msg)
 	if err != nil {
 		fmt.Println(err.Error())
