@@ -23,7 +23,7 @@ func main() {
 	service := micro.NewService(
 		micro.Server(sgrpc.NewServer()),  // 这里不用默认的rpcserver，改用grpcserver，注释也可以运行
 		micro.Client(cgrpc.NewClient()),  // 对应的client应该也是 grpc
-		micro.Name("HelloGreeter1"),
+		micro.Name("HelloGreeter"),
 		micro.Registry(reg),
 	)
 

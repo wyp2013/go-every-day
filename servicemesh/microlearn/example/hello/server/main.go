@@ -14,11 +14,11 @@ import (
 	"math/rand"
 )
 
-type Greeter struct {
+type GreeterX struct {
 }
 
 // Sends a greeting
-func (s *Greeter) SayHello(ctx context.Context, in *pb.HelloRequest, reply *pb.HelloReply) error {
+func (s *GreeterX) SayHello(ctx context.Context, in *pb.HelloRequest, reply *pb.HelloReply) error {
 	if in == nil {
 		return errors.New("input is empty")
 	}
@@ -34,7 +34,7 @@ func (s *Greeter) SayHello(ctx context.Context, in *pb.HelloRequest, reply *pb.H
 	return nil
 }
 
-func (s *Greeter) SayHello2(ctx context.Context, stream pb.Greeter_SayHello2Stream) error {
+func (s *GreeterX) SayHello2(ctx context.Context, stream pb.Greeter_SayHello2Stream) error {
 	count := 0
 
 	for {
@@ -51,7 +51,7 @@ func (s *Greeter) SayHello2(ctx context.Context, stream pb.Greeter_SayHello2Stre
 		}
 
 		// do something
-		fmt.Println(req)
+		fmt.Println("req ", req)
 	}
 
 	return nil
@@ -75,7 +75,7 @@ func main() {
 	)
 
 	service.Init()
-	pb.RegisterGreeterHandler(service.Server(), new(Greeter))
+	pb.RegisterGreeterHandler(service.Server(), new(GreeterX))
 
 
     // 启动broker服务

@@ -112,26 +112,20 @@ type GreeterHandler interface {
 }
 
 func RegisterGreeterHandler(s server.Server, hdlr GreeterHandler, opts ...server.HandlerOption) error {
-	type greeter interface {
-		SayHello(ctx context.Context, in *HelloRequest, out *HelloReply) error
-		SayHello2(ctx context.Context, stream server.Stream) error
-	}
-	type Greeter struct {
-		greeter
-	}
-	h := &greeterHandler{hdlr}
-	return s.Handle(s.NewHandler(&Greeter{h}, opts...))
+
+	h := &Greeter{hdlr}
+	return s.Handle(s.NewHandler(h, opts...))
 }
 
-type greeterHandler struct {
+type Greeter struct {
 	GreeterHandler
 }
 
-func (h *greeterHandler) SayHello(ctx context.Context, in *HelloRequest, out *HelloReply) error {
+func (h *Greeter) SayHello(ctx context.Context, in *HelloRequest, out *HelloReply) error {
 	return h.GreeterHandler.SayHello(ctx, in, out)
 }
 
-func (h *greeterHandler) SayHello2(ctx context.Context, stream server.Stream) error {
+func (h *Greeter) SayHello2(ctx context.Context, stream server.Stream) error {
 	return h.GreeterHandler.SayHello2(ctx, &greeterSayHello2Stream{stream})
 }
 
