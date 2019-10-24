@@ -30,4 +30,5 @@ protoc --grpc-gateway_out=logtostderr=true:. ./hello.proto
 ```
 # curl 测试
 curl -X POST -k https://localhost:8090/hello_world -d '{"name": "xx", "age":1}'
+https://127.0.0.1:10086/v1/blocks/date?start_ts=1565768001&end_ts=1565769001
 ```

@@ -24,8 +24,7 @@ func main() {
 	ctx, cancle := context.WithTimeout(context.Background(), time.Second)
 	defer cancle()
 
-
-	for i := 0; i < 5; i++ {
+	for i := 0; i < 1; i++ {
 		name := fmt.Sprintf("xx-%d-yy", i)
 		age := int32(i+10)
 		req := &pb.HelloRequest{Name: name, Age: age}

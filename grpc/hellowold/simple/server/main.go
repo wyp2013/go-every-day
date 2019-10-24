@@ -38,7 +38,7 @@ func (s *HelloServer) SayHello(ctx context.Context, in *pb.HelloRequest) (*pb.He
 
 func main() {
 	lis, _ := net.Listen("tcp", ":55555")
-	gSer := grpc.NewServer()
+	gSer := grpc.NewServer(grpc.UnknownServiceHandler(nil))
 	pb.RegisterGreeterServer(gSer, &HelloServer{})
 
 	err := gSer.Serve(lis)

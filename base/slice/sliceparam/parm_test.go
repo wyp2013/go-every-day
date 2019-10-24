@@ -70,6 +70,33 @@ func TestMoidyfSliceItem(t *testing.T) {
 }
 
 
+// 此列让你时刻记住slice是值专递，slice的len、cap
+func TestAppend(t *testing.T) {
+	a := []int{1,2,}
+	fmt.Println("a", &a, len(a), cap(a))
+
+
+	// a len 3, cap 4,
+	a = append(a, 2)
+	fmt.Println("a", &a, len(a), cap(a))
+
+
+	var b, c []int
+	// b len 4, cap 4; a len 3, cap 4, b.data = a.data
+	b = append(a, 8)
+	fmt.Println("a", &a, len(a), cap(a))
+	fmt.Println("b", &b, len(b), cap(b))
+
+	// c len 4, cap 4; a len 3, cap 4, c.data = a.data
+	c = append(a, 32)
+	fmt.Println("a", &a, len(a), cap(a))
+
+	// so 最终b、c是一样
+	fmt.Println(b)
+	fmt.Println(c)
+}
+
+
 
 
 
