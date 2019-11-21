@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"regexp"
 	"testing"
+	. "github.com/smartystreets/goconvey/convey"
 )
 
 // 处理key没有加引号的情况
@@ -13,4 +14,10 @@ func TestRlace(t *testing.T) {
 	reg := regexp.MustCompile("(\\w+):")
 	str = reg.ReplaceAllString(str, "\"$1\":")
 	fmt.Println(str)
+}
+
+func TestRlace1(t *testing.T)  {
+	Convey("Given a valid db connection, get latest block's number from db", t, func() {
+		fmt.Println("xxx")
+	})
 }

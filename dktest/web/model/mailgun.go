@@ -3,9 +3,7 @@ package model
 import (
 	"fmt"
 	"github.com/mailgun/mailgun-go"
-	"context"
 	"os"
-	"time"
 )
 
 
@@ -40,10 +38,10 @@ func (m *Mailgun) SendMessage(from, subject, text string, to []string, filePathL
 		message.AddAttachment(file)
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*30)
-	defer cancel()
+	//ctx, cancel := context.WithTimeout(context.Background(), time.Second*30)
+	//defer cancel()
 
-	msg, id, err := m.mailgun.Send(ctx, message)
+	msg, id, err := m.mailgun.Send(message)
 	if err != nil {
 		fmt.Println(err.Error())
 		return "", err

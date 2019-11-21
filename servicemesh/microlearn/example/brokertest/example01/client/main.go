@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"github.com/micro/go-micro"
 	"github.com/micro/go-micro/broker"
@@ -23,13 +24,13 @@ func main() {
 
 	service.Init()
 
-	//cmsg := `{"message": "Hello World"}`
-	//err = service.Client().Publish(ctx, service.Client().NewMessage("testTopic", cmsg))
-	//if err != nil {
-	//	// 这个测试会报错"{"id":"go.micro.client","code":500,"detail":"Unsupported Content-Type: application/grpc+proto","status":"Internal Server Error"}
-	//	// 原因： https://github.com/micro/go-micro/issues/625
-	//	fmt.Println(err.Error())
-	//}
+	cmsg := `{"message": "Hello World"}`
+	err := service.Client().Publish(context.Background(), service.Client().NewMessage("testTopic", cmsg))
+	if err != nil {
+		// 这个测试会报错"{"id":"go.micro.client","code":500,"detail":"Unsupported Content-Type: application/grpc+proto","status":"Internal Server Error"}
+		// 原因： https://github.com/micro/go-micro/issues/625
+		fmt.Println(err.Error())
+	}
 
 	msg := &broker.Message{
 		Header: map[string]string{
@@ -39,7 +40,7 @@ func main() {
 	}
 
 	// broker的publish是异步发送
-	err := service.Options().Broker.Publish("testTopic", msg)
+	err = service.Options().Broker.Publish("testTopic", msg)
 	if err != nil {
 		fmt.Println(err.Error())
 	}

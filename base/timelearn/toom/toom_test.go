@@ -34,7 +34,7 @@ func TestUseTimer2(t *testing.T) {
 	runtime.ReadMemStats(&ms)
 	fmt.Println("before, have", runtime.NumGoroutine(), "goroutines,", ms.Alloc, "bytes allocated", ms.HeapObjects, "heap object")
 
-	closeCh := UseTimer2(10)
+	closeCh := UseTimer2(1)
 
 	time.Sleep(20 * time.Second)
 	runtime.GC()

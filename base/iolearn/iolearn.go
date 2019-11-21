@@ -1,0 +1,5 @@
+package iolearn
+
+func ioInput() {
+
+}

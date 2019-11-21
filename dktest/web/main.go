@@ -7,7 +7,6 @@ import (
 	"flag"
 	"fmt"
 	_ "github.com/go-sql-driver/mysql"
-	"github.com/go-xorm/core"
 	"github.com/go-xorm/xorm"
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
@@ -20,6 +19,8 @@ import (
 	"path"
 	"runtime"
 	"time"
+	"xorm.io/core"
+	_ "net/http/pprof"
 )
 
 func InitDb(dsn, dblog string) (engine *xorm.Engine, err error) {
@@ -30,7 +31,7 @@ func InitDb(dsn, dblog string) (engine *xorm.Engine, err error) {
 	}
 
 	engine.ShowSQL(true)
-	engine.Logger().SetLevel(core.LogLevel(core.LOG_INFO))
+	engine.Logger().SetLevel(core.LOG_DEBUG)
 
 	f := utils.NewXormLogger(dblog)
 	if f == nil {
@@ -266,7 +267,7 @@ func main() {
 	e := echo.New()
 
 	//Db初始化
-	engine, err := InitDb("root:123456@tcp(127.0.0.1:3306)/pushtx?charset=utf8", getLogPath() + "/xorm_log")
+	engine, err := InitDb("root:123456@tcp(127.0.0.1:3306)/pushtx?charset=utf8", getLogPath()+"/xorm_log")
 	if err != nil {
 		panic("init db fail:" + err.Error())
 	}
@@ -307,6 +308,13 @@ func main() {
 	e.GET("/test/group/get", controller.GetGroups)
 	e.POST("/test/file/upload", controller.UploadFile)
 	e.POST("/sendEmail", controller.UploadFile)
+
+	go func() {
+		if err := http.ListenAndServe(":6060", nil); err != nil {
+			fmt.Println(err.Error())
+			return
+		}
+	}()
 
 	//启动server
 	e.Logger.Fatal(e.Start(":30000"))

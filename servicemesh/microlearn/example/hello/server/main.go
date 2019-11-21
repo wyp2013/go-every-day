@@ -72,6 +72,7 @@ func main() {
 		micro.Name("HelloGreeter"),
 		micro.Version("latest"),
 		micro.Registry(reg),
+		micro.Address(":9990"),
 	)
 
 	service.Init()
