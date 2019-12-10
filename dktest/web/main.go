@@ -7,6 +7,7 @@ import (
 	"flag"
 	"fmt"
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/go-xorm/core"
 	"github.com/go-xorm/xorm"
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
@@ -15,12 +16,11 @@ import (
 	"go-every-day/dktest/web/utils"
 	"io/ioutil"
 	"net/http"
+	_ "net/http/pprof"
 	"os"
 	"path"
 	"runtime"
 	"time"
-	"xorm.io/core"
-	_ "net/http/pprof"
 )
 
 func InitDb(dsn, dblog string) (engine *xorm.Engine, err error) {
@@ -76,6 +76,8 @@ func PanicRecover(next echo.HandlerFunc) echo.HandlerFunc {
 				fmt.Println(host, err.Error())
 			}
 		}()
+
+		fmt.Println("PanicRecover func")
 		return next(e)
 	}
 }
@@ -85,7 +87,7 @@ func RequestLantency(next echo.HandlerFunc) echo.HandlerFunc {
 		out := next(e)
 		cc := e.(*common.CustomContext)
 		latency := time.Now().Sub(cc.StartTime)
-		fmt.Println(latency)
+		fmt.Println("RequestLantency: ", latency)
 		return out
 	}
 }
@@ -185,6 +187,10 @@ func checkJsonWhiteSpace(str string) error {
 func RequestLog(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		cc := c.(*common.CustomContext)
+		// clone 一个请求
+		//cReq := cc.Request().Clone(cc.Request().Context())
+		//body := cReq.Body
+
 		body, _ := ioutil.ReadAll(cc.Request().Body)
 		if len(body) != 0 {
 			cc.Body = body
@@ -192,7 +198,6 @@ func RequestLog(next echo.HandlerFunc) echo.HandlerFunc {
 			cc.Body = make([]byte, 0)
 		}
 
-		fmt.Println()
 		//*http.Request.Body 是 io.ReadCloser 类型，只能一次性读取完整，第二次就是空的
 		//所以,在读到了body之后,需要再设置回来,否则action逻辑就无法再获取body了
 		cc.Request().Body = ioutil.NopCloser(bytes.NewBuffer(body))
@@ -232,6 +237,7 @@ func CommonParamCheck(before echo.HandlerFunc) echo.HandlerFunc {
 			}
 		}
 
+		fmt.Println("CommonParamCheck func")
 		return before(c)
 	}
 }
@@ -288,6 +294,7 @@ func main() {
 				RequestId: c.Response().Header().Get(echo.HeaderXRequestID),
 				StartTime: time.Now(),
 			}
+			fmt.Println("new context")
 			return h(cc)
 		}
 	})
@@ -295,19 +302,17 @@ func main() {
 	//recover
 	e.Use(PanicRecover)
 
-	//request处理时间的统计以及返回值的统计
-	e.Use(RequestLantency)
-
 	//请求日志
 	e.Use(RequestLog)
 
 	//检查通用参数
 	e.Use(CommonParamCheck)
 
+	//request处理时间的统计以及返回值的统计
+	e.Use(RequestLantency)
+
 	//注册服务相关接口
 	e.GET("/test/group/get", controller.GetGroups)
-	e.POST("/test/file/upload", controller.UploadFile)
-	e.POST("/sendEmail", controller.UploadFile)
 
 	go func() {
 		if err := http.ListenAndServe(":6060", nil); err != nil {

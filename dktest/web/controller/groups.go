@@ -9,6 +9,8 @@ import (
 )
 
 func GetGroups(c echo.Context) error {
+	fmt.Println("get group")
+
 	idStr := c.QueryParam("id")
 	cc := c.(*common.CustomContext)
 
