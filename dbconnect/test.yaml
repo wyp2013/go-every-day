@@ -1,0 +1,26 @@
+
+hashrateDB:
+  user: web_write
+  password: "nchbR9^Bh8oQMxyw8nndWDRE"
+  addr: 127.0.0.1:33068
+  db: explorer_web_main_db
+  parsetime: true
+  maxOpenConns: 100
+  maxIdleConns: 100
+
+redis:
+  addr: 127.0.0.1:6379
+  password:
+  db:
+
+log:
+  level: debug
+  showSource: true
+  path: "/Users/bitmain/gowork/src/go-every-day/dbconnect/logs/"
+
+health:
+  port: 3000
+  intervalSeconds: 10
+
+poolConfig: "/Users/bitmain/gowork/src/go-every-day/dbconnect/logs/poolInfo.csv"
+
