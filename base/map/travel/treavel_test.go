@@ -77,3 +77,22 @@ func TestMapDelete(t *testing.T) {
 	tMap["yyyy"] = 6
 	delete(tMap, "xxxx")
 }
+
+func TestMapTrap(t *testing.T) {
+	fmt.Println("xxxxxx")
+
+	tMap := make(map[string]int, 0)
+	tMap["xxxx"] = 1
+	tMap["yyyy"] = 6
+	tMap["zzzz"]  = 10
+
+	ttMap := make(map[string]*int, 0)
+	for key, val := range tMap {
+		ttMap[key] = &val
+	}
+
+	for key, val := range ttMap {
+		fmt.Println(key, *val)
+	}
+
+}
