@@ -2,7 +2,7 @@ package main
 
 import "fmt"
 
-// 引用：https://qcrao91.gitbook.io/go/shu-zu-he-qie-pian/shu-zu-he-qie-pian-you-shi-mo-yi-tong
+// 引用：https://mp.weixin.qq.com/s/MTZ0C9zYsNrb8wyIm2D8BA
 func main() {
 	slice := []int{0, 1, 2, 3, 4, 5, 6, 7, 8, 9}
 	s1 := slice[2:5]
