@@ -33,14 +33,16 @@ func UseTimer(second int) chan bool {
 			breakFor := false
 
 			select {
-			case _, ok := <-ch:
+			case n, ok := <-ch:
 				if !ok {
 					breakFor = true
 					break
 				}
+				fmt.Println(n)
 
 				// fmt.Println(cnt, x)
 			case <-time.After(time.Duration(second) * time.Second):
+				// 这里有坑
 				fmt.Println("time is out")
 				breakFor = true
 				break
