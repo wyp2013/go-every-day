@@ -44,7 +44,7 @@ func WaitTimeout(wg *sync.WaitGroup, timeout time.Duration) bool {
 		return true
 	}
 
-	// ctx, cancle := context.WithTimeout(context.TODO(), time.Second *10)
+	//ctx, cancle := context.WithTimeout(context.TODO(), time.Second *10)
 	// defer cancle()
 	// ctx.Done()
 
