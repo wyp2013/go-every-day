@@ -58,7 +58,7 @@ func createTest() map[string]context.CancelFunc {
 		}()
 
 
-		//// b
+		// b
 		go func() {
 			bctx, bcan := context.WithCancel(mctx)
 			sy.Lock()
@@ -95,7 +95,6 @@ func createTest() map[string]context.CancelFunc {
 				}
 			}
 		}()
-
 
 		for {
 			select {

@@ -54,3 +54,17 @@ func TestCompressString(t *testing.T) {
 	fmt.Println(compressString("abbccd"))
 
 }
+
+
+func TestSwitch(t *testing.T) {
+	x := 1
+	switch x {
+	case 1:
+	case 2:
+		fmt.Print("xxxyyy")
+	case 10:
+	case 11:
+	default:
+		fmt.Print("xxxxx")
+	}
+}
