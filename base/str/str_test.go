@@ -3,6 +3,7 @@ package str
 import (
 	"bytes"
 	"fmt"
+	"reflect"
 	"strconv"
 	"testing"
 )
@@ -67,4 +68,13 @@ func TestSwitch(t *testing.T) {
 	default:
 		fmt.Print("xxxxx")
 	}
+}
+
+
+func TestSwitchb(t *testing.T) {
+	var x *int
+	y := 5
+	x = &y
+
+	fmt.Print(x, &y, reflect.TypeOf(&x))
 }
