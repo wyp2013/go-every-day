@@ -48,3 +48,30 @@ func TestUseTimer2(t *testing.T) {
 
 	fmt.Println("over")
 }
+
+
+// 修改定时时间测试
+func TestSelectTime(t *testing.T) {
+	var tt int
+	tt = 2
+	go func() {
+		for {
+			select {
+			case <-time.After(time.Duration(tt) * time.Second):
+				fmt.Println("test 10", tt)
+			}
+		}
+	}()
+
+	time.Sleep(20 * time.Second)
+	fmt.Println(" new time")
+
+	tt = 20
+
+	time.Sleep(21 * time.Second)
+	fmt.Println(" new time")
+	tt = 3
+
+	select {
+	}
+}

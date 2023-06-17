@@ -6,7 +6,15 @@ import (
 	"reflect"
 	"strconv"
 	"testing"
+	"unsafe"
 )
+
+func TestStruct(t *testing.T) {
+	s := struct {
+	}{}
+
+	fmt.Println(unsafe.Sizeof(s))
+}
 
 func TestStr(t *testing.T) {
 	i, err := strconv.ParseInt("123", 10, 64)

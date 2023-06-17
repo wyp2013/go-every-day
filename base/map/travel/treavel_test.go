@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"reflect"
 	"testing"
+	"time"
 )
 
 func TestMapType(t *testing.T) {
@@ -97,6 +98,28 @@ func TestMapTrap(t *testing.T) {
 
 }
 
+func SetMap(h map[string]string) {
+	for k, v := range h {
+		fmt.Println(k, v)
+	}
+
+	if h == nil {
+		fmt.Println("null map")
+		return
+	}
+
+	h["xxx"] = "yyy"
+
+	for k, v := range h {
+		fmt.Println(k, v)
+	}
+}
+
+func TestSetMap(t *testing.T) {
+	var h map[string]string
+	SetMap(h)
+}
+
 
 func TestMapSlice(t *testing.T) {
 	tMapSlice := make(map[string][]string, 0)
@@ -188,4 +211,32 @@ func TestReflect(t *testing.T) {
 	fmt.Println(v.String())
 }
 
+// case panic
+func TestMapReadWrite(t *testing.T) {
+	rwMap := make(map[string]int, 0)
+
+	go func() {
+		for {
+			select {
+			case <-time.After(1 * time.Second):
+				fmt.Println("write map: ", rwMap["test"])
+				rwMap["test"] = 1
+				rwMap["tes2"] = 1
+			}
+		}
+	}()
+
+	go func() {
+		for {
+			select {
+			case <-time.After(1 * time.Second):
+				fmt.Println("read map: ", rwMap["test"])
+			}
+		}
+	}()
+
+	select {
+
+	}
+}
 

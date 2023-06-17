@@ -1,0 +1,159 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    deployment.kubernetes.io/revision: "1"
+    meta.helm.sh/release-name: dae-yarn-nm
+    meta.helm.sh/release-namespace: default
+    reloader.stakater.com/auto: "false"
+  creationTimestamp: "2022-11-15T07:16:51Z"
+  generation: 1
+  labels:
+    app: dae-yarn-nm
+    app.kubernetes.io/instance: dae-yarn-nm
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: dae-yarn-nm
+    chart: dae-yarn-nm-0.0.48-rilc66-tmp
+    dae-work: "true"
+    helm.sh/chart: dae-yarn-nm-0.0.48-rilc66-tmp
+    heritage: Helm
+    release: dae-yarn-nm
+  name: dae-yarn-nm
+  namespace: default
+  resourceVersion: "52317256"
+  selfLink: /apis/apps/v1/namespaces/default/deployments/dae-yarn-nm
+  uid: 8abf6175-a944-405a-bbbd-2edb97dff3b2
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 2
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app: dae-yarn-nm
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: dae-yarn-nm
+        app.kubernetes.io/instance: dae-yarn-nm
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/name: dae-yarn-nm
+        dae-work: "true"
+        helm.sh/chart: dae-yarn-nm-0.0.48-rilc66-tmp
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: dae-worker
+                    operator: In
+                    values:
+                      - "true"
+      containers:
+        - command:
+            - /home/dae/run/hadoop/bin/yarn
+            - --config
+            - /home/dae/run/hadoop/etc/hadoop
+            - nodemanager
+          env:
+            - name: APPLICATION_WEB_PROXY_BASE
+              value: /dae-engine/yarn-nm/{NM_IP}:{NM_WEB_PORT}
+          image: iregistry.baidu-int.com/acg-dae/yarn:14.0.0.202
+          imagePullPolicy: IfNotPresent
+          name: dae-yarn-nm
+          ports:
+            - containerPort: 8681
+              hostPort: 8681
+              name: port-0
+              protocol: TCP
+            - containerPort: 8682
+              hostPort: 8682
+              name: port-1
+              protocol: TCP
+            - containerPort: 8683
+              hostPort: 8683
+              name: port-2
+              protocol: TCP
+          resources:
+            limits:
+              cpu: "8"
+              memory: 16000Mi
+            requests:
+              cpu: "2"
+              memory: 4Gi
+          securityContext:
+            privileged: false
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+            - mountPath: /home/dae/run/data
+              mountPropagation: None
+              name: data
+            - mountPath: /home/bml/storage/mnt
+              mountPropagation: HostToContainer
+              name: bml-all-pvc
+            - mountPath: /home/dae/run/hadoop/etc/hadoop/core-site.xml
+              name: conf
+              subPath: core-site.xml
+            - mountPath: /home/dae/run/hadoop/etc/hadoop/yarn-env.sh
+              name: conf
+              subPath: yarn-env.sh
+            - mountPath: /home/dae/run/hadoop/etc/hadoop/yarn-site.xml
+              name: conf
+              subPath: yarn-site.xml
+      dnsPolicy: ClusterFirstWithHostNet
+      hostNetwork: true
+      initContainers:
+        - command:
+            - sleep
+            - "60"
+          image: iregistry.baidu-int.com/acg-dae/yarn:14.0.0.202
+          imagePullPolicy: IfNotPresent
+          name: dae-yarn-nm-initcontainer
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext:
+        fsGroup: 601
+        runAsGroup: 601
+        runAsUser: 601
+      terminationGracePeriodSeconds: 30
+      volumes:
+        - name: bml-all-pvc
+          persistentVolumeClaim:
+            claimName: bml-all-pvc
+        - hostPath:
+            path: /data/dae-data/yarn-nm
+            type: DirectoryOrCreate
+          name: data
+        - configMap:
+            defaultMode: 420
+            name: dae-yarn-nm
+          name: conf
+status:
+  availableReplicas: 2
+  conditions:
+    - lastTransitionTime: "2022-11-15T07:20:02Z"
+      lastUpdateTime: "2022-11-15T07:20:02Z"
+      message: Deployment has minimum availability.
+      reason: MinimumReplicasAvailable
+      status: "True"
+      type: Available
+    - lastTransitionTime: "2022-11-15T07:16:51Z"
+      lastUpdateTime: "2022-11-15T07:20:02Z"
+      message: ReplicaSet "dae-yarn-nm-75db76b847" has successfully progressed.
+      reason: NewReplicaSetAvailable
+      status: "True"
+      type: Progressing
+  observedGeneration: 1
+  readyReplicas: 2
+  replicas: 2
+  updatedReplicas: 2
