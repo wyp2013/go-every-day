@@ -3,8 +3,7 @@ package test
 import (
 	"log"
 	"testing"
-)
-import (
+
 	"github.com/boltdb/bolt"
 )
 
