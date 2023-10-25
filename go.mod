@@ -22,5 +22,5 @@ require (
 	github.com/smartystreets/goconvey v1.8.1
 	github.com/spf13/viper v1.16.0
 	golang.org/x/net v0.11.0
-	google.golang.org/grpc v1.56.1
+	google.golang.org/grpc v1.56.3
 )
